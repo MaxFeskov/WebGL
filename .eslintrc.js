@@ -15,6 +15,7 @@ module.exports = {
   ],
   plugins: ['prettier', 'security', 'import'],
   rules: {
+    'linebreak-style': [1, "windows"],
     'no-var': 0,
     'prefer-const': 0,
     'no-multiple-empty-lines': [1, { "max": 1, "maxEOF": 1 }],
