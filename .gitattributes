@@ -1,0 +1,11 @@
+* text=auto
+
+## SOURCE CODE
+*.sh eol=lf
+
+## CONFIGS
+package.json      eol=lf
+package-lock.json eol=lf
+
+## FONTS
+*.svg   binary

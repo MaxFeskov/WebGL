@@ -1,0 +1,20 @@
+{
+  "name": "project",
+  "version": "0.0.1",
+  "description": "project",
+  "scripts": {
+    "dev": "gulp"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.23.6",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.10.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-security": "^1.4.0",
+    "gulp": "^4.0.0",
+    "gulp-cli": "^2.0.1",
+    "prettier": "^1.11.1",
+    "prettier-eslint": "^8.8.1"
+  }
+}
