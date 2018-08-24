@@ -29,6 +29,8 @@ function main() {
     return;
   }
 
+  const ctx = document.getElementById('canvas-copy').getContext('2d');
+
   const vsSource = `
     attribute vec4 aVertexPosition;
     attribute vec4 aVertexColor;
@@ -71,6 +73,8 @@ function main() {
   function render() {
     drawScene(gl, programInfo, buffers);
 
+    ctx.drawImage(canvas, 0, 0);
+
     requestAnimationFrame(render);
   }
 
@@ -80,9 +84,9 @@ function main() {
 
   window.addEventListener('load', () => {
     reset();
-    resize(gl);
+    resize(gl, ctx);
   });
-  window.addEventListener('resize', () => { resize(gl); });
+  window.addEventListener('resize', () => { resize(gl, ctx); });
   window.addEventListener('mousemove', handleMousemoveEvent, true);
   window.addEventListener('mousedown', (event) => {
     rotateFlag = true;
@@ -154,12 +158,12 @@ function initBuffers(gl) {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
   const faceColors = [
-    [1.0, 1.0, 1.0, 1.0], // Front face: white
-    [1.0, 0.0, 0.0, 1.0], // Back face: red
-    [0.0, 1.0, 0.0, 1.0], // Top face: green
-    [0.0, 0.0, 1.0, 1.0], // Bottom face: blue
-    [1.0, 1.0, 0.0, 1.0], // Right face: yellow
-    [1.0, 0.0, 1.0, 1.0], // Left face: purple
+    [1.0, 1.0, 1.0, 1.0], // Front face
+    [1.0, 1.0, 1.0, 1.0], // Back face
+    [1.0, 1.0, 1.0, 1.0], // Top face
+    [1.0, 1.0, 1.0, 1.0], // Bottom face
+    [1.0, 1.0, 1.0, 1.0], // Right face
+    [1.0, 1.0, 1.0, 1.0], // Left face
   ];
 
   let colors = [];
@@ -278,11 +282,16 @@ function drawScene(gl, programInfo, buffers) {
   }
 }
 
-function resize(gl) {
+function resize(gl, ctx) {
   var width = gl.canvas.clientWidth;
   var height = gl.canvas.clientHeight;
   gl.canvas.width = width;
   gl.canvas.height = height;
+
+  if (ctx) {
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+  }
 }
 
 function reset() {
@@ -298,8 +307,6 @@ function rotate(matrix, dx, dy) {
 
   if (Math.abs(deltaX) > Math.abs(deltaY)) {
     mat4.rotate(newRotationMatrix, newRotationMatrix, deltaX, [0, 1, 0]);
-  } else {
-    mat4.rotate(newRotationMatrix, newRotationMatrix, deltaY, [1, 0, 0]);
   }
 
   mat4.multiply(matrix, newRotationMatrix, matrix);
