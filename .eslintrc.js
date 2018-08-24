@@ -16,8 +16,9 @@ module.exports = {
   plugins: ['prettier', 'security', 'import'],
   rules: {
     'linebreak-style': [1, "windows"],
-    'no-var': 0,
+    'no-var': 1,
     'prefer-const': 0,
+    'camelcase': 0,
     'no-multiple-empty-lines': [1, { "max": 1, "maxEOF": 1 }],
     'no-use-before-define': [1, { functions: false }],
     'no-alert': 0,

@@ -1,4 +1,7 @@
-import { initShaderProgram } from './helpers/shader.js';
+import {
+  createProgram, getWebGLContext, get2DContext,
+} from './helpers/webgl-utils.js';
+
 import mat4create from './helpers/gl-mat4/create.js';
 import mat4perspective from './helpers/gl-mat4/perspective.js';
 import mat4translate from './helpers/gl-mat4/translate.js';
@@ -16,45 +19,44 @@ const mat4 = {
 };
 
 const rotationMatrix = mat4.create();
+const vsSource = `
+  attribute vec4 aVertexPosition;
+  attribute vec4 aVertexColor;
+
+  uniform mat4 uModelViewMatrix;
+  uniform mat4 uProjectionMatrix;
+
+  varying lowp vec4 vColor;
+
+  void main(void) {
+    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+    vColor = aVertexColor;
+  }
+`;
+
+const fsSource = `
+  precision mediump float;
+
+  varying lowp vec4 vColor;
+
+  void main(void) {
+    gl_FragColor = vColor;
+  }
+`;
 
 main();
 
 function main() {
-  const canvas = document.getElementById('canvas');
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  const gl = getWebGLContext(document.getElementById('canvas'));
+  const ctx = get2DContext(document.getElementById('canvas-copy'));
 
-  if (!gl) {
+  if (!gl && !ctx) {
     alert('Unable to initialize WebGL. Your browser or machine may not support it.');
 
     return;
   }
 
-  const ctx = document.getElementById('canvas-copy').getContext('2d');
-
-  const vsSource = `
-    attribute vec4 aVertexPosition;
-    attribute vec4 aVertexColor;
-
-    uniform mat4 uModelViewMatrix;
-    uniform mat4 uProjectionMatrix;
-
-    varying lowp vec4 vColor;
-
-    void main(void) {
-      gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-      vColor = aVertexColor;
-    }
-  `;
-
-  const fsSource = `
-    varying lowp vec4 vColor;
-
-    void main(void) {
-      gl_FragColor = vColor;
-    }
-  `;
-
-  const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+  const shaderProgram = createProgram(gl, vsSource, fsSource);
 
   const programInfo = {
     program: shaderProgram,
@@ -69,14 +71,6 @@ function main() {
   };
 
   const buffers = initBuffers(gl);
-
-  function render() {
-    drawScene(gl, programInfo, buffers);
-
-    ctx.drawImage(canvas, 0, 0);
-
-    requestAnimationFrame(render);
-  }
 
   let rotateFlag = false;
   let mouseX;
@@ -107,6 +101,14 @@ function main() {
 
       rotate(rotationMatrix, -dx / 10, -dy / 10);
     }
+  }
+
+  function render() {
+    drawScene(gl, programInfo, buffers);
+
+    ctx.drawImage(gl.canvas, 0, 0);
+
+    requestAnimationFrame(render);
   }
 
   render();
@@ -221,7 +223,7 @@ function drawScene(gl, programInfo, buffers) {
   const modelViewMatrix = mat4.create();
   mat4.identity(modelViewMatrix);
 
-  mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -1.0]);
+  mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -1.5]);
   mat4.multiply(modelViewMatrix, modelViewMatrix, rotationMatrix);
 
   {
@@ -283,8 +285,8 @@ function drawScene(gl, programInfo, buffers) {
 }
 
 function resize(gl, ctx) {
-  var width = gl.canvas.clientWidth;
-  var height = gl.canvas.clientHeight;
+  let width = gl.canvas.clientWidth;
+  let height = gl.canvas.clientHeight;
   gl.canvas.width = width;
   gl.canvas.height = height;
 
