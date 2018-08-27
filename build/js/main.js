@@ -2,21 +2,7 @@ import {
   createProgram, getWebGLContext, get2DContext,
 } from './helpers/webgl-utils.js';
 
-import mat4create from './helpers/gl-mat4/create.js';
-import mat4perspective from './helpers/gl-mat4/perspective.js';
-import mat4translate from './helpers/gl-mat4/translate.js';
-import mat4rotate from './helpers/gl-mat4/rotate.js';
-import mat4identity from './helpers/gl-mat4/identity.js';
-import mat4multiply from './helpers/gl-mat4/multiply.js';
-
-const mat4 = {
-  create: mat4create,
-  identity: mat4identity,
-  multiply: mat4multiply,
-  perspective: mat4perspective,
-  rotate: mat4rotate,
-  translate: mat4translate,
-};
+import * as mat4 from './helpers/gl-matrix/mat4.js';
 
 const rotationMatrix = mat4.create();
 const vsSource = `
